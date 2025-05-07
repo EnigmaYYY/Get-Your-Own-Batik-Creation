@@ -28,7 +28,7 @@ async function generateImageWithVolcanoAPIServer(prompt) {
         // 检查代理服务器是否在运行
         try {
             // 尝试连接代理服务器
-            const checkResponse = await fetch('http://localhost:5000/', {
+            const checkResponse = await fetch('https://get-your-own-batik-creation.onrender.com/generate-image', {
                 method: 'GET',
                 mode: 'no-cors',  // 使用no-cors模式，避免CORS错误
                 cache: 'no-cache',
@@ -86,7 +86,7 @@ async function generateImageWithVolcanoAPIServer(prompt) {
                         console.log(`发送第${i+1}个图像生成请求，种子值: ${requestWithSeed.seed}...`);
                         try {
                             // 使用本地SDK代理服务器
-                            const serverUrl = 'http://localhost:5000/generate-image';
+                            const serverUrl = 'https://get-your-own-batik-creation.onrender.com/generate-image';
                             console.log(`请求服务器: ${serverUrl}`);
 
                             // 添加超时处理
