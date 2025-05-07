@@ -262,13 +262,48 @@ footer {
         flex-direction: column !important;
         gap: 12px !important;
     }
-    .checkbox-grid {
-        grid-template-columns: 1fr !important;
-        gap: 10px !important;
+    .checkbox-grid, .product-selection, .text-input {
+        width: 100% !important;
+        box-sizing: border-box;
+    }
+    .checkbox-grid label, .product-selection label, .text-input textarea {
+        width: 100% !important;
+        box-sizing: border-box;
+        margin: 0 !important;
+        border-radius: 10px !important;
+        border: 1.5px solid #b0c4de !important;
+        display: flex !important;
+        align-items: center;
+        justify-content: flex-start;
+    }
+    .checkbox-grid label {
+        margin-bottom: 10px !important;
+    }
+    .checkbox-grid label:last-child {
+        margin-bottom: 0 !important;
+    }
+    .product-selection label {
+        margin-bottom: 10px !important;
+    }
+    .product-selection label:last-child {
+        margin-bottom: 0 !important;
+    }
+    .text-input textarea {
+        margin-top: 10px !important;
+        margin-bottom: 0 !important;
+    }
+    .product-custom-row > div:not(:last-child) {
+        border-right: none !important;
     }
     .product-custom-row {
-        flex-direction: column !important;
-        gap: 12px !important;
+        border: none !important;
+    }
+    .input-section > div[style*='height: 1px'] {
+        width: 100% !important;
+        margin: 18px 0 !important;
+        background: #dbe4ee !important;
+        height: 1.5px !important;
+        border: none !important;
     }
     .modal-content {
         width: 98vw !important;
