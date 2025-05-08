@@ -99,18 +99,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
                 .catch(error => {
                     console.error('Error generating images:', error);
-                    // 显示错误信息
-                    const errorInfo = document.createElement('div');
-                    errorInfo.style.position = 'fixed';
-                    errorInfo.style.top = '10px';
-                    errorInfo.style.left = '10px';
-                    errorInfo.style.backgroundColor = 'rgba(255,0,0,0.7)';
-                    errorInfo.style.color = 'white';
-                    errorInfo.style.padding = '10px';
-                    errorInfo.style.zIndex = '9999';
-                    errorInfo.innerHTML = `<strong>图像生成错误:</strong> ${error.message}`;
-                    document.body.appendChild(errorInfo);
-
                     // Fallback to placeholder images if API fails
                     usePlaceholderImages();
                 }),
@@ -157,18 +145,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     return filteredResults;
                 } catch (serverError) {
                     console.error('服务器代理调用火山引擎API失败:', serverError);
-                    // 显示错误信息
-                    const errorInfo = document.createElement('div');
-                    errorInfo.style.position = 'fixed';
-                    errorInfo.style.top = '50px';
-                    errorInfo.style.left = '10px';
-                    errorInfo.style.backgroundColor = 'rgba(255,0,0,0.7)';
-                    errorInfo.style.color = 'white';
-                    errorInfo.style.padding = '10px';
-                    errorInfo.style.zIndex = '9999';
-                    errorInfo.style.maxWidth = '80%';
-                    errorInfo.innerHTML = `<strong>火山引擎API错误:</strong> ${serverError.message}`;
-                    document.body.appendChild(errorInfo);
                 }
             } else {
                 console.error('服务器代理未加载，请确保已引入volcano_api_server.js');
@@ -234,18 +210,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error('生成图像时出错:', error);
 
-            // 显示错误信息在页面上（仅用于调试）
-            const errorInfo = document.createElement('div');
-            errorInfo.style.position = 'fixed';
-            errorInfo.style.top = '50px';
-            errorInfo.style.left = '10px';
-            errorInfo.style.backgroundColor = 'rgba(255,0,0,0.7)';
-            errorInfo.style.color = 'white';
-            errorInfo.style.padding = '10px';
-            errorInfo.style.zIndex = '9999';
-            errorInfo.style.maxWidth = '80%';
-            errorInfo.innerHTML = `<strong>图像生成错误:</strong> ${error.message}`;
-            document.body.appendChild(errorInfo);
+            // 错误已记录到控制台
 
             throw error;
         }
@@ -354,9 +319,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
             } catch (contextError) {
                 document.getElementById('cultural-context-placeholder').innerHTML = `
-                    <div class="analysis-container error">
-                        <h3>文化解释错误</h3>
-                        <p>文化解释请求失败: ${contextError.message}</p>
+                    <div class="analysis-container cultural-context">
+                        <div class="cultural-title-row">
+                            <h3 id="cultural-title">文化意义</h3>
+                        </div>
+                        <p>蜡染是中国少数民族的传统工艺，图案通常包含丰富的文化象征意义。花卉图案象征美好与繁荣，几何图案代表宇宙秩序，动物图案则传达特定的文化寓意。</p>
                     </div>
                 `;
             }
@@ -443,10 +410,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // 检查响应状态
             if (!response.ok) {
-                const errorText = await response.text();
-                console.error('API响应状态码错误:', response.status);
-                console.error('API错误详情:', errorText);
-                throw new Error(`文化解释 API调用失败: ${response.status} - ${errorText}`);
+                console.log('文化解释API请求未成功，使用默认内容');
+                return '蜡染是中国少数民族的传统工艺，图案通常包含丰富的文化象征意义。花卉图案象征美好与繁荣，几何图案代表宇宙秩序，动物图案则传达特定的文化寓意。';
             }
 
             const data = await response.json();
@@ -604,7 +569,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text })
             });
-            if (!response.ok) throw new Error('TTS请求失败');
+            if (!response.ok) {
+                console.log('TTS请求未成功，状态码:', response.status);
+                return; // 静默失败，不显示错误
+            }
             const audioBlob = await response.blob();
             culturalAudioUrl = URL.createObjectURL(audioBlob);
             culturalAudio = new Audio(culturalAudioUrl);
@@ -658,11 +626,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('TTS生成失败:', error);
+            // 不显示错误状态，保持按钮正常外观
             const playBtn = document.getElementById('tts-play-btn');
             if (playBtn) {
                 playBtn.textContent = '🔊';
-                playBtn.style.opacity = '0.5';
-                playBtn.style.cursor = 'not-allowed';
             }
 
             // 确保二维码显示（即使TTS失败）
@@ -714,7 +681,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 return true;
             } else {
-                console.error('QRCode库未加载');
+                console.log('使用备用QRCode生成方法');
                 // 使用备用方法：外部API服务
                 const imgUrl = encodeURIComponent(text);
                 container.innerHTML = `
@@ -725,8 +692,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 return true;
             }
         } catch (error) {
-            console.error('生成二维码失败:', error);
-            return false;
+            console.log('二维码生成遇到问题，使用简单文本替代');
+            // 使用简单文本替代
+            container.innerHTML = `
+                <div style="width:128px;height:128px;display:flex;align-items:center;justify-content:center;background:#f8f8f8;border:1px solid #ddd;border-radius:4px;">
+                    <span style="font-size:12px;color:#555;text-align:center;padding:10px;">长按图片可保存</span>
+                </div>
+                <div class="qrcode-hint">长按图片可保存</div>
+            `;
+            container.style.display = 'block';
+            return true;
         }
     }
 });
